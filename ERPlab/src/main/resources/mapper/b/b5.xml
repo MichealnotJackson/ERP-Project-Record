@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="b5">
+
+<select id="selectEmployee" parameterType="map" resultType="map">
+	select * from erp_employee1 e1 
+	left join erp_employee2 e2 
+	on e1.employee1_no = e2.employee1_no
+	left join erp_team et
+	on e2.team_no = et.team_no
+	where e2.comcode_no = #{comcode_no}
+	order by e2.team_no
+	<if test="type != null">
+	    <if test="type == 'employee1_code'">
+	       and e1.employee1_code like '%${word}%' 
+	    </if>
+	    <if test="type == 'employee2_position'">
+	       and e2.employee2_position like '%${word}%' 
+	    </if>
+	</if>
+</select>
+
+<select id="selectEmployee2" parameterType="map" resultType="map">
+	select * from erp_employee1 e1 
+	left join erp_employee2 e2 
+	on e1.employee1_no = e2.employee1_no
+	left join erp_team et
+	on e2.team_no = et.team_no
+	where e2.comcode_no = #{comcode_no}
+	and e1.employee1_no = #{employee1_no}
+	<if test="type != null">
+	    <if test="type == 'employee1_code'">
+	       and e1.employee1_code like '%${word}%' 
+	    </if>
+	    <if test="type == 'employee2_position'">
+	       and e2.employee2_position like '%${word}%' 
+	    </if>
+	</if>
+</select>
+
+<insert id="insertEmployee1" parameterType="com.lab.erp.vo.login.Erp_Employee1VO">
+	insert into erp_employee1(employee1_code, employee1_name, employee1_addr1, employee1_addr2, employee1_postal, employee1_residentno, employee1_phone, employee1_email, employee1_id, employee1_pw, employee1_disability, employee1_merit) values(#{employee1_code}, #{employee1_name}, #{employee1_addr1}, #{employee1_addr2}, #{employee1_postal}, #{employee1_residentno}, #{employee1_phone}, #{employee1_email}, #{employee1_id}, #{employee1_pw}, #{employee1_disability}, #{employee1_merit})
+</insert>
+
+<!-- <insert id="insertEmployee2" parameterType="com.lab.erp.vo.login.Erp_Employee1VO">
+	<if test="employee2_holiday != null">
+		insert into erp_employee2(employee1_no, team_no, employee2_extension, employee2_position, employee2_exp, employee2_salary, employee2_holiday, employee2_four, employee2_worktype) values(#{employee1_no}, #{team_no}, #{employee2_extension}, #{employee2_position}, #{employee2_exp}, #{employee2_salary}, #{employee2_holiday}, #{employee2_four}, #{employee2_worktype})
+	</if>
+	<if test="employee2_holiday == null">
+		insert into erp_employee2(employee1_no, team_no, employee2_extension, employee2_position, employee2_exp, employee2_salary, employee2_four, employee2_worktype) values(#{employee1_no}, #{team_no}, #{employee2_extension}, #{employee2_position}, #{employee2_exp}, #{employee2_salary}, #{employee2_four}, #{employee2_worktype})
+	</if>
+</insert> -->
+
+<insert id="insertEmployee2" parameterType="com.lab.erp.vo.login.Erp_Employee2VO">
+    insert into erp_employee2 (employee1_no, team_no, employee2_extension, employee2_position, employee2_salary, employee2_holiday, employee2_four, employee2_worktype, comcode_no)
+    values (#{employee1_no}, #{team_no}, #{employee2_extension}, #{employee2_position}, #{employee2_salary}, COALESCE(#{employee2_holiday}, 15), #{employee2_four}, #{employee2_worktype}, #{comcode_no})
+</insert>
+
+<select id="selectEmployeeno" parameterType="String" resultType="int">
+	select employee1_no from erp_employee1 where employee1_code = #{employee1_code}
+</select>
+
+<select id="selectAttendance" parameterType="int" resultType="com.lab.erp.vo.login.Erp_Employee1VO">
+	select * from erp_employee1 e1 
+	left join erp_employee2 e2 on e1.employee1_no = e2.employee1_no 
+	left join erp_attendance ea on e2.employee2_no = ea.employee2_no
+	left join erp_hdkind eh on ea.hdkind_no = eh.hdkind_no
+	where e2.employee2_no = #{employee2_no}
+</select>
+
+<insert id="insertAttendance" parameterType="com.lab.erp.vo.b.b5.Erp_AttendanceVO">
+	insert into erp_attendance(hdkind_no, employee2_no, attendance_start, attendance_end) values(#{hdkind_no}, #{employee2_no}, #{attendance_start}, #{attendance_end})
+</insert>
+
+<select id="selectLocal" parameterType="map" resultType="double">
+	SELECT employee2_holiday - (
+	select eh.hdkind_days * (SELECT 
+    COUNT(DATE_ADD(#{attendance_start}, INTERVAL seq.seq DAY)) - 
+    (SELECT COUNT(*) FROM erp_localdate WHERE erp_localdate.localdate_date BETWEEN #{attendance_start} AND #{attendance_end}) AS date_between
+    FROM (
+    SELECT (t4.i*1000 + t3.i*100 + t2.i*10 + t1.i) AS seq
+    FROM
+    (SELECT 0 AS i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t1,
+    (SELECT 0 AS i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t2,
+    (SELECT 0 AS i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t3,
+    (SELECT 0 AS i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t4
+    ) seq
+    WHERE DATE_ADD(#{attendance_start}, INTERVAL seq.seq DAY) &lt;= #{attendance_end}) from erp_hdkind eh where eh.hdkind_no = #{hdkind_no}
+    )
+    FROM erp_employee2 WHERE employee2_no = #{employee2_no}
+</select>
+
+<update id="updateHoliday" parameterType="com.lab.erp.vo.login.Erp_Employee2VO">
+	update erp_employee2 set employee2_holiday = #{employee2_holiday} where employee2_no = #{employee2_no}
+</update>
+
+<insert id="insertEmphistory" parameterType="com.lab.erp.vo.login.Erp_EmphistoryVO">
+	insert into erp_emphistory(employee1_no, team_no, emphistory_employeed, comcode_no) 
+	values(#{employee1_no}, #{team_no}, now(), #{comcode_no})
+</insert>
+
+<update id="updateEmployee1" parameterType="map">
+	update erp_employee1 set employee1_code = #{employee1_code},
+	employee1_name = #{employee1_name}, employee1_postal = #{employee1_postal},
+	employee1_addr1 = #{employee1_addr1}, employee1_addr2 = #{employee1_addr2},
+	employee1_residentno = #{employee1_residentno}, employee1_phone = #{employee1_phone},
+	employee1_email = #{employee1_email}, employee1_id = #{employee1_id},
+	employee1_pw = #{employee1_pw}, employee1_disability = #{employee1_disability},
+	employee1_merit = #{employee1_merit} 
+	where employee1_no = #{employee1_no}
+</update>
+
+<update id="updateEmployee2" parameterType="map">
+	update erp_employee2 set team_no = #{team_no}, employee2_position = #{employee2_position},
+	employee2_exp = #{employee2_exp}, employee2_salary = #{employee2_salary},
+	employee2_holiday = #{employee2_holiday}, employee2_extension = #{employee2_extension},
+	employee2_four = #{employee2_four}, employee2_worktype = #{employee2_worktype}
+	where employee2_no = #{employee2_no}
+</update>
+
+</mapper>

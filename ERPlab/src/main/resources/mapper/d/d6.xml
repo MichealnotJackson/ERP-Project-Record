@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="d6">
+	<select id="sortkind" resultType="map">
+		select gs.*, gk.* from erp_goodssort gs, erp_goodskind gk where gs.goodssort_no = gk.goodssort_no
+	</select>
+	
+	<select id="goodslev" resultType="com.lab.erp.vo.d.d6.Erp_GoodslevVO">
+		select * from erp_goodslev
+	</select>
+	
+	<select id="goodsno" parameterType="String" resultType="int">
+		select goods_no from erp_goods where goods_code = #{goods_code}
+	</select>
+	
+	<select id="goodsstno" parameterType="com.lab.erp.vo.d.d6.Erp_GoodsstVO" resultType="int">
+		select max(goodsst_no) from erp_goodsst 
+	</select>
+	
+	<select id="goodslotno" parameterType="com.lab.erp.vo.d.d6.Erp_GoodslotVO" resultType="int">
+		select goodslot_no from erp_goodslot 
+		where goodslot_lot = #{goodslot_lot}
+		and goodslot_qty = #{goodslot_qty} 
+		and goodslot_production = #{goodslot_production} 
+		and goodslot_expiry = #{goodslot_expiry} 
+		and goodslot_price = #{goodslot_price} 
+		and goodslot_tax = #{goodslot_tax} 
+		and goodslot_total = #{goodslot_total} 
+		and goods_no = #{goods_no} 
+	</select>
+	
+	<select id="getLotNo" parameterType="String" resultType="int">
+		select goodslot_no from erp_goodslot where goodslot_lot = #{goodslot_lot} order by goodslot_no asc
+	</select>
+	
+	<select id="getLotNo1" parameterType="String" resultType="String">
+		select goodslot_lot from erp_goodslot where goodslot_lot = #{goodslot_lot} group by goodslot_lot
+	</select>
+
+	<insert id="createGoodsst" parameterType="com.lab.erp.vo.d.d6.Erp_GoodsstVO">
+		insert into erp_goodsst(goodsst_unit,goodsst_spec,goodsst_size,goodsst_package,goodsst_ea) 
+		values(#{goodsst_unit},#{goodsst_spec},#{goodsst_size},#{goodsst_package},#{goodsst_ea})
+	</insert>
+
+	<insert id="createGoods" parameterType="com.lab.erp.vo.d.d6.Erp_GoodsVO">
+		insert into erp_goods(goods_code,goods_barcode,goods_name,goodskind_no,goods_customerprice,goods_description,goodsst_no,client_no1,client_no2,goods_stockqty,goodslev_no,goods_location,comcode_no) 
+		values(#{goods_code},#{goods_barcode},#{goods_name},#{goodskind_no},#{goods_customerprice},#{goods_description},#{goodsst_no},#{client_no1},#{client_no2},#{goods_stockqty},#{goodslev_no},#{goods_location},#{comcode_no})
+	</insert>
+	
+	<insert id="createGoodsLot" parameterType="com.lab.erp.vo.d.d6.Erp_GoodslotVO">
+		insert into erp_goodslot(goodslot_lot,goodslot_qty,goodslot_production,goodslot_expiry,goodslot_price,goodslot_tax,goodslot_total,goods_no) 
+		values(#{goodslot_lot},#{goodslot_qty},sysdate(),#{goodslot_expiry},#{goodslot_price},#{goodslot_tax},#{goodslot_total},#{goods_no})
+	</insert>
+	
+	<update id="updateGoodsst" parameterType="com.lab.erp.vo.d.d6.Erp_GoodsstVO">
+		update erp_goodsst set 
+		goodsst_unit = #{goodsst_unit},
+		goodsst_spec = #{goodsst_spec},
+		goodsst_size = #{goodsst_size},
+		goodsst_package = #{goodsst_package},
+		goodsst_ea = #{goodsst_ea} 
+		where goodsst_no = #{goodsst_no}
+	</update>
+	
+	<update id="updateGoods" parameterType="com.lab.erp.vo.d.d6.Erp_GoodsVO">
+		update erp_goods set 
+		goods_code = #{goods_code},
+		goods_barcode = #{goods_barcode},
+		goods_name = #{goods_name},
+		goodskind_no = #{goodskind_no},
+		goods_customerprice = #{goods_customerprice},
+		goods_description = #{goods_description},
+		goodsst_no = #{goodsst_no},
+		client_no1 = #{client_no1},
+		client_no2 = #{client_no2},
+		goods_stockqty = #{goods_stockqty},
+		goodslev_no = #{goodslev_no},
+		goods_location = #{goods_location} 
+		where goods_no = #{goods_no}
+	</update>
+	
+	<update id="updateGoodsOne" parameterType="com.lab.erp.vo.d.d6.Erp_GoodsVO">
+		update erp_goods set goods_stockqty = goods_stockqty + #{goods_stockqty} where goods_no = #{goods_no}
+	</update>
+	
+	<update id="updateGoodsSub" parameterType="com.lab.erp.vo.d.d6.Erp_GoodsVO">
+		update erp_goods set goods_stockqty = goods_stockqty - #{goods_stockqty} where goods_no = #{goods_no}
+	</update>
+	
+	<update id="updateGoodsLot" parameterType="com.lab.erp.vo.d.d6.Erp_GoodslotVO">
+		update erp_goodslot set 
+		goodslot_lot = #{goodslot_lot},
+		goodslot_qty = #{goodslot_qty},
+		goodslot_production = #{goodslot_production},
+		goodslot_expiry = #{goodslot_expiry},
+		goodslot_price = #{goodslot_price},
+		goodslot_tax = #{goodslot_tax},
+		goodslot_total = #{goodslot_total},
+		goods_no = #{goods_no} 
+		where goodslot_no = #{goodslot_no}
+	</update>
+	
+	<update id="updateLotQty" parameterType="com.lab.erp.vo.d.d6.Erp_GoodslotVO">
+		update erp_goodslot set 
+		goodslot_qty = #{goodslot_qty} 
+		where goodslot_no = #{goodslot_no}
+	</update>
+	
+	<update id="updateLotQtyOne" parameterType="com.lab.erp.vo.d.d6.Erp_GoodslotVO">
+		update erp_goodslot set 
+		goodslot_qty = goodslot_qty + #{goodslot_qty} 
+		where goodslot_no = #{goodslot_no}
+	</update>
+	
+	<update id="updateLotQtySub" parameterType="com.lab.erp.vo.d.d6.Erp_GoodslotVO">
+		update erp_goodslot set 
+		goodslot_qty = goodslot_qty - #{goodslot_qty} 
+		where goodslot_no = #{goodslot_no}
+	</update>
+	
+	<delete id="deleteGoodsLot" parameterType="int">
+		delete from erp_goodslot where goodslot_no = #{goodslot_no}
+	</delete>
+	
+	<delete id="deleteGoods" parameterType="int">
+		delete from erp_goods where goods_no = #{goods_no}
+	</delete>
+	
+	<delete id="deleteGoodsst" parameterType="int">
+		delete from erp_goodsst where goodsst_no = #{goodsst_no} 
+	</delete>
+	
+	
+	<!-- ㄱㅇㅎ -->
+	<select id="selectGoods" parameterType="map" resultType="map">
+		select * from erp_goodslot egl
+		left join erp_goods eg
+		on eg.goods_no = egl.goods_no
+		left join erp_goodslev egle
+		on eg.goodslev_no = egle.goodslev_no
+		where comcode_no = #{comcode_no}
+		<if test="type != null">
+            <if test="type == 'goods_name'">
+               and eg.goods_name like '%${word}%' 
+            </if>
+            <if test="type == 'goodslot_lot'">
+               and egl.goodslot_lot like '%${word}%' 
+            </if>
+        </if>
+	</select>
+	
+	<select id="selectGoods2" parameterType="map" resultType="map">
+		select * from erp_goodslot egl
+		left join erp_goods eg
+		on eg.goods_no = egl.goods_no
+		where eg.comcode_no = #{comcode_no} 
+		and egl.goodslot_no = #{goodslot_no}
+		<if test="type != null">
+            <if test="type == 'goods_name'">
+               and eg.goods_name like '%${word}%' 
+            </if>
+            <if test="type == 'goodslot_lot'">
+               and eg.goodslot_lot like '%${word}%' 
+            </if>
+        </if>
+	</select>
+	
+	<select id="selectGoodskind" resultType="com.lab.erp.vo.d.d6.Erp_GoodskindVO">
+		select * from erp_goodskind
+	</select>
+	
+	<select id="selectGoodsst" resultType="com.lab.erp.vo.d.d6.Erp_GoodsstVO">
+		select * from erp_goodsst
+	</select>
+	
+	<select id="selectGoodslev" resultType="com.lab.erp.vo.d.d6.Erp_GoodslevVO">
+		select * from erp_goodslev
+	</select>
+	
+	<select id="selectClient" resultType="com.lab.erp.vo.c.Erp_ClientVO">
+		select * from erp_client
+	</select>
+	
+	<insert id="insertGoods" parameterType="map">
+		insert into erp_goods(goods_code, goods_barcode, goods_name
+		, goodskind_no, goods_customerprice, goods_description,
+		goodsst_no, client_no1, client_no2, goods_stockqty, goodslev_no
+		, comcode_no) values(#{goods_code}, #{goods_barcode},
+		#{goods_name}, #{goodskind_no}, #{goods_customerprice},
+		#{goods_description}, #{goodsst_no}, #{client_no1},
+		#{client_no2}, #{goods_stockqty}, #{goodslev_no},
+		#{comcode_no})
+	</insert>
+	
+	<insert id="insertGoodslot" parameterType="map">
+		insert into erp_goodslot(goodslot_lot, goodslot_qty,
+		goodslot_production, goodslot_expiry, goodslot_price,
+		goodslot_tax, goodslot_total, goods_no) values(#{goodslot_lot},
+		#{goodslot_qty}, #{goodslot_production}, #{goodslot_expiry},
+		#{goodslot_price}, #{goodslot_tax}, #{goodslot_total},
+		#{goods_no})
+	</insert>
+	
+	<select id="selectGoodsno" parameterType="String" resultType="int">
+		select goods_no from erp_goods where goods_code = #{goods_code}
+	</select>
+	
+	<update id="updateGoods2" parameterType="map">
+		update erp_goods set 
+		goods_code = #{goods_code},
+		goods_barcode = #{goods_barcode},
+		goods_name = #{goods_name},
+		goodskind_no = #{goodskind_no},
+		goods_customerprice = #{goods_customerprice},
+		goods_description = #{goods_description},
+		client_no1 = #{client_no1},
+		client_no2 = #{client_no2},
+		goods_stockqty = #{goods_stockqty},
+		goodslev_no = #{goodslev_no}
+		where goods_no = #{goods_no}
+	</update>
+	
+	<update id="updateGoodslot" parameterType="map">
+		update erp_goodslot set 
+		goodslot_lot = #{goodslot_lot},
+		goodslot_qty = #{goodslot_qty},
+		goodslot_production = #{goodslot_production},
+		goodslot_expiry = #{goodslot_expiry},
+		goodslot_price = #{goodslot_price},
+		goodslot_tax = #{goodslot_tax},
+		goodslot_total = #{goodslot_total},
+		goods_no = #{goods_no} 
+		where goodslot_no = #{goodslot_no}
+	</update>
+	
+	<delete id="deleteGoodslot" parameterType="map">
+		delete from erp_goodslot where goodslot_no = #{goodslot_no}
+	</delete>
+	
+	<update id="updateQty" parameterType="map">
+		update erp_goodslot set goodslot_qty = #{goodslot_qty} where goodslot_no = #{goodslot_no}
+	</update>
+	
+	<!-- 입출고관리 -->
+	<select id="manageForsales" parameterType="map" resultType="map">
+		select * from erp_forsales ef
+		left join erp_goods eg
+		on ef.goods_no = eg.goods_no
+		where ef.comcode_no = #{comcode_no}
+		<if test="type != null">
+            <if test="type == 'goods_name'">
+               and eg.goods_name like '%${word}%' 
+            </if>
+            <if test="type == 'goods_code'">
+               and eg.goods_code like '%${word}%' 
+            </if>
+        </if>
+	</select>
+	
+	<select id="manageImport" parameterType="map" resultType="map">
+		select * from erp_import ei
+		left join erp_importorder ei2
+		on ei.importorder_no = ei2.importorder_no
+		left join erp_goods eg
+		on ei2.goods_no = eg.goods_no
+		where ei.comcode_no = #{comcode_no}
+		<if test="type != null">
+            <if test="type == 'goods_name'">
+               and eg.goods_name like '%${word}%' 
+            </if>
+            <if test="type == 'goods_code'">
+               and eg.goods_code like '%${word}%' 
+            </if>
+        </if>
+	</select>
+	
+	<select id="manageLocalsales" parameterType="map" resultType="map">
+		select * from erp_localsales el
+		left join erp_salesgoods es
+		on el.localsales_cino = es.salesgoods_code
+		left join erp_goodslot eg
+		on eg.goodslot_no = es.goodslot_no
+		left join erp_goods eg2
+		on eg.goods_no = eg2.goods_no
+		where el.comcode_no = #{comcode_no}
+		<if test="type != null">
+            <if test="type == 'goods_name'">
+               and eg2.goods_name like '%${word}%' 
+            </if>
+            <if test="type == 'goods_code'">
+               and eg2.goods_code like '%${word}%' 
+            </if>
+        </if>
+	</select>
+	
+	<select id="manageStoresales" parameterType="map" resultType="map">
+		select * from erp_storesales es
+		left join erp_goods eg
+		on es.goods_no = eg.goods_no
+		where es.comcode_no = #{comcode_no}
+		<if test="type != null">
+            <if test="type == 'goods_name'">
+               and eg.goods_name like '%${word}%' 
+            </if>
+            <if test="type == 'goods_code'">
+               and eg.goods_code like '%${word}%' 
+            </if>
+        </if>
+	</select>
+	
+	<select id="manageOnline" parameterType="map" resultType="map">
+		select * from erp_online eo
+		left join erp_goods eg
+		on eo.goods_no = eg.goods_no
+		where eo.comcode_no = #{comcode_no}
+		<if test="type != null">
+            <if test="type == 'goods_name'">
+               and eg.goods_name like '%${word}%' 
+            </if>
+            <if test="type == 'goods_code'">
+               and eg.goods_code like '%${word}%' 
+            </if>
+        </if>
+	</select>
+	
+	<select id="managePurchase" parameterType="map" resultType="map">
+		select * from erp_purchaseconnect ep
+		left join erp_purchase ep2
+		on ep.purchase_no = ep2.purchase_no
+		left join erp_goodslot eg
+		on ep.goodslot_no = eg.goodslot_no
+		left join erp_goods eg2
+		on eg.goods_no = eg2.goods_no
+		where ep2.comcode_no = #{comcode_no}
+		<if test="type != null">
+            <if test="type == 'goods_name'">
+               and eg2.goods_name like '%${word}%' 
+            </if>
+            <if test="type == 'goods_code'">
+               and eg2.goods_code like '%${word}%' 
+            </if>
+        </if>
+	</select>
+	
+	<update id="updateGoodslev" parameterType="map">
+		update erp_goods set goodslev_no = #{goodslev_no} where goods_no = #{goods_no}
+	</update>
+	
+	<insert id="insertGoodsst" parameterType="map">
+		insert into erp_goodsst(goodsst_unit, goodsst_spec, 
+		goodsst_size, goodsst_package, goodsst_ea) value(#{goodsst_unit},
+		#{goodsst_spec}, #{goodsst_size}, #{goodsst_package}, 
+		#{goodsst_ea})
+	</insert>
+	
+	<select id="selectGoodsstno" parameterType="map" resultType="int">
+		select goodsst_no from erp_goodsst where
+		goodsst_unit = #{goodsst_unit} and goodsst_spec = #{goodsst_spec} and
+		goodsst_size = #{goodsst_size} and goodsst_package = #{goodsst_package} and
+		goodsst_ea = #{goodsst_ea}
+	</select>
+	
+	<select id="selectGoodsst2" parameterType="map" resultType="map">
+		select * from erp_goodsst where goodsst_no = #{goodsst_no}
+	</select>
+	
+	<update id="updateGoodsst2" parameterType="map">
+		update erp_goodsst set goodsst_unit = #{goodsst_unit},
+		goodsst_spec = #{goodsst_spec}, goodsst_size = #{goodsst_size},
+		goodsst_package = #{goodsst_package}, goodsst_ea = #{goodsst_ea}
+		where goodsst_no = #{goodsst_no}
+	</update>
+	
+</mapper>

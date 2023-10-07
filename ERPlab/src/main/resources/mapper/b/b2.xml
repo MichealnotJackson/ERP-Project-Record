@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="b2">
+
+<select id="closingList" parameterType="map" resultType="map">
+select * from erp_closing ec
+where comcode_no = #{comcode_no}
+<if test="type != null">
+    <if test="type == 'closing_code'">
+       and closing_code like '%${word}%' 
+    </if>
+</if>
+</select>
+
+<insert id="insertMoney" parameterType="com.lab.erp.vo.b.b2.Erp_MoneyVO">
+insert into erp_money(money_code, money_date, debtor_no, money_debtor,
+money_debtoramount, creditor_no, money_creditor, money_creditoramount,
+comcode_no) 
+values(#{money_code}, now(), #{debtor_no}, #{money_debtor}, 
+#{money_debtoramount}, #{creditor_no}, #{money_creditor}, 
+#{money_creditoramount}, #{comcode_no})
+</insert>
+
+<select id="moneyBs3nod" parameterType="int" resultType="int">
+select bs3_no from erp_debtor where debtor_no = #{debtor_no}
+</select>
+
+<select id="moneyBs3noc" parameterType="int" resultType="int">
+select bs3_no from erp_creditor where creditor_no = #{creditor_no}
+</select>
+
+<select id="moneyBs3ctgrd" parameterType="int" resultType="String">
+select bs3_ctgr from erp_bs3 where bs3_no = #{bs3_no}
+</select>
+
+<select id="moneyBs3ctgrc" parameterType="int" resultType="String">
+select bs3_ctgr from erp_bs3 where bs3_no = #{bs3_no}
+</select>
+
+<!-- 예산 -->
+<select id="budgetList" parameterType="map" resultType="map">
+	select * from erp_budget eb 
+	left join erp_team et
+	on eb.team_no = et.team_no
+	where eb.comcode_no = #{comcode_no}
+	<if test="type != null">
+	    <if test="type == 'budget_type'">
+	       and eb.budget_type like '%${word}%' 
+	    </if>
+	</if>
+</select>
+
+<insert id="insertBudget" parameterType="com.lab.erp.vo.b.b2.Erp_BudgetVO">
+	insert into erp_budget(budget_type, team_no, budget_contents,
+	budget_approved, budget_execution, budget_amount, budget_tax,
+	budget_total, comcode_no) values(#{budget_type}, #{team_no},
+	#{budget_contents}, #{budget_approved}, #{budget_execution},
+	#{budget_amount}, #{budget_tax}, #{budget_total}, #{comcode_no})
+</insert>
+
+<select id="budgetList2" parameterType="map" resultType="map">
+	select * from erp_budget eb 
+	left join erp_team et
+	on eb.team_no = et.team_no
+	where eb.comcode_no = #{comcode_no}
+	and eb.budget_no = #{budget_no}
+	<if test="type != null">
+	    <if test="type == 'budget_type'">
+	       and eb.budget_type like '%${word}%' 
+	    </if>
+	</if>
+</select>
+
+<update id="updateBudget" parameterType="map">
+	update erp_budget set budget_type = #{budget_type},
+	team_no = #{team_no}, budget_contents = #{budget_contents},
+	budget_approved = #{budget_approved}, budget_execution = #{budget_execution}
+	, budget_amount = #{budget_amount}, budget_tax = #{budget_tax},
+	budget_total = #{budget_total}
+	where budget_no = #{budget_no}
+</update>
+
+<!-- 계좌관리 -->
+<select id="selectAccount" parameterType="map" resultType="map">
+	select * from erp_account ea
+	left join erp_currency ec
+	on ea.currency_no = ec.currency_no
+	where ea.comcode_no = #{comcode_no}
+	<if test="type != null">
+	    <if test="type == 'account_num'">
+	       and ea.account_num like '%${word}%' 
+	    </if>
+	    <if test="type == 'account_swift'">
+	       and ea.account_swift like '%${word}%' 
+	    </if>
+	</if>
+</select>
+
+<select id="selectCountryno" parameterType="String" resultType="int">
+	select country_no from erp_country where country_code = #{country_code}
+</select>
+
+<select id="currencyDate" parameterType="int" resultType="com.lab.erp.vo.b.b3.Erp_CurrencyVO">
+	select currency_date from erp_currency where country_no = #{country_no}
+</select>
+
+<insert id="insertCurrency" parameterType="com.lab.erp.vo.b.b3.Erp_CurrencyVO">
+	insert into erp_currency(country_no, currency_name, 
+	currency_rate, currency_date) values(
+	#{country_no}, #{currency_name}, #{currency_rate},
+	#{currency_date}
+	)
+</insert>
+
+<select id="selectCurrencyno" parameterType="int" resultType="int">
+	select currency_no from erp_account where account_no = #{account_no}
+</select>
+
+<update id="updateExchange" parameterType="map">
+	update erp_account set account_exchange = #{account_exchange}
+	where account_no = #{account_no}
+</update>
+
+<select id="selectBalance" parameterType="int" resultType="int">
+	select account_balance from erp_account where account_no = #{account_no}
+</select>
+
+<select id="selectRate" parameterType="int" resultType="double">
+	select currency_rate from erp_currency where currency_no = #{currency_no}
+</select>
+
+<!-- 자금테이블 -->
+<select id="moneyList" parameterType="map" resultType="map">
+	select * from erp_money
+	where comcode_no = #{comcode_no}
+	<if test="type != null">
+	    <if test="type == 'money_debtor'">
+	       and money_debtor like '%${word}%' 
+	    </if>
+	    <if test="type == 'money_creditor'">
+	       and money_creditor like '%${word}%' 
+	    </if>
+	</if>
+</select>
+
+</mapper>

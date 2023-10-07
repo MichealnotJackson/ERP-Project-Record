@@ -1,0 +1,105 @@
+body {
+    overflow-x: hidden;
+}
+
+.footer {
+    width: 100vw;
+    height: 80px;
+    padding: 0px 20px;
+    border: none;
+    margin-top: 100px;
+}
+
+.footer a {
+	text-decoration: none;
+}
+.footer > .footer_box {
+    height: 100%;
+    width: 100vw;
+    display: flex;
+}
+.footer > .footer_box > .footer_info {
+    width: 35%;
+}
+.footer > .footer_box > .footer_info > .main {
+    margin-bottom: 15px;
+}
+.footer > .footer_box > .footer_info > .main > .sns_text {
+    font-size: 1.0rem;
+    font-weight: bold;
+}
+.footer > .footer_box > .footer_info > .main > .sns_text_tel {
+    font-size: 0.4rem;
+}
+.footer > .footer_box > .footer_info > .in_footer {
+    font-size: 0.7rem;
+}
+
+.footer > .footer_box > .developer {
+    width: 45%;
+    height: 100%;
+}
+.footer > .footer_box > .developer .swiper-slide {
+    display: flex;
+}
+.footer > .footer_box > .developer .profile_img {
+    height: 100px;
+    width: 100px;
+    margin-right: 5%;
+}
+.footer > .footer_box > .developer .profile_img img {
+    width: 100%;
+    height: auto;
+}
+.footer > .footer_box > .developer .profile_info {
+    width: 400px;
+}
+.footer > .footer_box > .developer .profile_info > .profile_text {
+    font-size: 0.7rem;
+}
+.footer
+    > .footer_box
+    > .developer
+    .profile_info
+    > .profile_text
+    .profile_subject {
+    font-weight: bold;
+}
+.footer > .footer_box > .developer .profile_info .introduce_box {
+    width: 400px;
+    height: 80px;
+    overflow: hidden;
+    margin-top: 10px;
+    margin-right: 10%;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.footer > .footer_box > .sns {
+    width: 15%;
+}
+.footer > .footer_box > .sns > .title {
+    font-size: 1.0rem;
+    font-weight: bold;
+    margin-bottom: 5%;
+}
+.footer > .footer_box > .sns > .sns_box {
+    display: flex;
+    justify-content: space-between;
+}
+.footer > .footer_box > .sns > .sns_box img {
+    width: 40px;
+    height: 40px;
+}
+
+
+/* 개인정보처리방침 */
+
+.erpPrivacyPolicy-Introduction {
+	padding: 50px;
+}
+
+
+
+
+
