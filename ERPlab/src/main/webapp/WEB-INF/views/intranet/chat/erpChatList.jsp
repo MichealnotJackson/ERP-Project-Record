@@ -46,7 +46,7 @@
 			            <c:if test="${map.chatroom_title != null }">
 		                	<th onclick="openChatroom(${map.chatroom_no },'${map.e2name }','${comcode_code }','${map.e2position }')">${map.chatroom_title }</th>
 			            </c:if>
-			            <th onclick="deleteRoom(${map.chatroom_no})">x</th>
+			            <th onclick="deleteRoom(${map.chatroom_no}, ${empNo})">x</th>
 		            </tr>
 	           	</c:if>
         		<c:if test="${empNo == map.e2no }">
@@ -57,7 +57,7 @@
 			            <c:if test="${map.chatroom_title != null }">
 		                	<th onclick="openChatroom(${map.chatroom_no },'${map.e2name }','${comcode_code }','${map.e1position }')">${map.chatroom_title }</th>
 			            </c:if>
-			            <th onclick="deleteRoom(${map.chatroom_no})">x</th>
+			            <th onclick="deleteRoom(${map.chatroom_no}, ${empNo})">x</th>
 		            </tr>
 	           	</c:if>
             </c:forEach>
@@ -142,10 +142,10 @@ function getlist(){
 	}
 }
 
-function deleteRoom(no){
+function deleteRoom(no, eno){
 	var ch = confirm("대화 내용도 전부 삭제됩니다. 채팅방을 나가시겠습니까?");
 	if(ch){
-		location.href='${pageContext.request.contextPath}/intranet/chat/deleteChatRoom?chatroom_no='+no+'&comcode_code='+code;
+		location.href='${pageContext.request.contextPath}/intranet/chat/deleteChatRoom?chatroom_no='+no+'&comcode_code='+code+"&employee2_no1="+eno;
 	}else {
 		return;
 	}
