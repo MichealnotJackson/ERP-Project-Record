@@ -21,6 +21,20 @@
 		<script src="${pageContext.request.contextPath}/js/httpRequest.js"></script>
 		<link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.9/css/unicons.css" />
 		
+		<style>
+	/* input type="number"일 떄 위/아래 화살표 버튼 제거*/
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type="number"] {
+        -moz-appearance: textfield; /* Firefox */
+    }
+</style>
+
+		
+		<!-- 로그인 세션 -->
 		<c:if test="${login == null }">
 			<script type="text/javascript">
 				alert("세션이 만료되었습니다.");
@@ -38,7 +52,7 @@
 	</head>
 	<body class="is-preload">
 		<!-- Wrapper -->
-			<div>
+			<div id="wrapper">
 
 				<!-- Header -->
 					<header id="header">
@@ -49,7 +63,7 @@
 								<li><a href="#">조직도</a></li>
 								<li><a href="#">일정</a></li>
 								<li><a href="#">주소록</a></li>
-								<li><a href="${pageContext.request.contextPath}/erpchat?comcode_code=${comcode_code}" target="_blank">메신저</a></li>
+								<li><a href="javascript:void(0);" onclick="msgWindow(${empNo})">메신저</a></li>
 								<li><a href="">이메일</a></li>
 								<li><a href="#">연차</a></li>	
 								<c:if test="${login == 1 }">
@@ -315,7 +329,7 @@
 							</section>
 
 					</section>
-
+ 
 </div>
 
 <script type="text/javascript">
@@ -334,9 +348,46 @@ function logout() {
     };
     xhr.send();
 }
+function openWindow(comcode_code) {
+	  // 새 창을 엽니다.
+	  var popup = window.open('', 'popup', 'width=300,height=200');
+	  
+	  // 양식을 생성합니다.
+	  popup.document.write('<form id="myForm" action="${pageContext.request.contextPath}/greeting/list" method="GET">');
+	  popup.document.write('<input type="text" id="inputValue" name="employee1_code" placeholder="사원코드를 입력하세요">');
+	  popup.document.write('<input type="hidden" name="comcode_code" value="' + comcode_code + '">'); // comcode_code 파라미터 추가
+	  popup.document.write('<input type="submit" value="전송">');
+	  popup.document.write('</form>');
+
+	  // 폼 제출 이벤트를 설정합니다.
+	  popup.document.getElementById('myForm').onsubmit = function(event) {
+	    event.preventDefault(); // 기본 제출 동작을 방지
+
+	    // 입력 필드에서 employee1_code 값을 가져옵니다.
+	    var employee1_code = popup.document.getElementById('inputValue').value;
+
+	    // 폼 제출 후에 창을 닫고 원래 페이지로 이동합니다.
+	    popup.close();
+	    // comcode_code와 employee1_code를 함께 전달합니다.
+	    window.location.href = '${pageContext.request.contextPath}/greeting/list?comcode_code=' + comcode_code + '&employee1_code=' + employee1_code;
+	  };
+	}
+
+
+	//메신저
+	function msgWindow(no) {
+		if(no == undefined){
+			alert("인트라넷으로 로그인 해주세요.");
+			location.href = "${pageContext.request.contextPath}/";
+		}
+	    var url = "${pageContext.request.contextPath}/intranet/chat/erpchat?comcode_code=${comcode_code}&employee2_no="+no;
+	    var windowFeatures = 'width=380,height=480';
+	
+	    window.open(url, '_blank', windowFeatures);
+	}
+
 
 
 </script>
 
 <div>
-
