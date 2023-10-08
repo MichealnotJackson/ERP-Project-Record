@@ -62,7 +62,7 @@
 								<li><a href="#">조직도</a></li>
 								<li><a href="#">일정</a></li>
 								<li><a href="#">주소록</a></li>
-								<li><a href="${pageContext.request.contextPath}/erpchat?comcode_code=${comcode_code}" target="_blank">메신저</a></li>
+								<li><a href="javascript:void(0);" onclick="msgWindow(${empNo})">메신저</a></li>
 								<li><a href="">이메일</a></li>
 								<li><a href="#">연차</a></li>	
 								<c:if test="${login == 1 }">
@@ -372,6 +372,18 @@ function openWindow(comcode_code) {
 	  };
 	}
 
+
+	//메신저
+	function msgWindow(no) {
+		if(no == undefined){
+			alert("인트라넷으로 로그인 해주세요.");
+			location.href = "${pageContext.request.contextPath}/";
+		}
+	    var url = "${pageContext.request.contextPath}/intranet/chat/erpchat?comcode_code=${comcode_code}&employee2_no="+no;
+	    var windowFeatures = 'width=380,height=480';
+	
+	    window.open(url, '_blank', windowFeatures);
+	}
 
 
 
